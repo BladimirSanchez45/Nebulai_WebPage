@@ -1,12 +1,176 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------ */
+/*  NebulAI · Sistema de diseño (tema claro, sofisticado tipo Apple)  */
+/*  Colores oficiales de marca:                                       */
+/*    Verde profundo  #163737   ·  Café  #473C38                      */
+/*    Beige/taupe     #CBC4BC   ·  Hueso #EDECE8                      */
+/* ------------------------------------------------------------------ */
+
 @font-face {
   font-family: 'Roxborough CF';
-  src: url('/src/assets/fonts/RoxboroughCF.ttf') format('truetype');
+  src: url('/fonts/RoxboroughCF.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
-h1, h2, h3 {
-  font-family: 'Roxborough CF', serif;
+@theme {
+  /* Superficies */
+  --color-paper: #edece8;      /* fondo hueso principal */
+  --color-paper-2: #e6e4de;    /* fondo alterno / secciones */
+  --color-surface: #f7f6f2;    /* tarjetas claras */
+  --color-white: #fbfaf7;
+
+  /* Tinta / texto */
+  --color-ink: #131c1a;        /* casi negro con matiz verde */
+  --color-muted: #5f635f;      /* texto secundario */
+
+  /* Marca */
+  --color-green: #163737;
+  --color-green-700: #1e4a48;
+  --color-green-900: #0f2726;
+  --color-brown: #473c38;
+  --color-taupe: #cbc4bc;
+  --color-line: #d8d5cd;       /* hairlines sobre hueso */
+
+  /* Verde profundo fijo (mismo en claro y oscuro) para paneles
+     grandes como footer y franja de estadísticas + su texto claro */
+  --color-deep: #163737;
+  --color-on-deep: #e9e7e1;
+
+  /* Tipografía */
+  --font-serif: 'Roxborough CF', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui,
+    'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Modo oscuro — se activa con data-theme="dark" en <html>.          */
+/*  El claro es el predeterminado (los valores de :root de arriba).   */
+/* ------------------------------------------------------------------ */
+:root[data-theme='dark'] {
+  --color-paper: #0e1615;      /* fondo profundo casi negro-verde */
+  --color-paper-2: #101a18;    /* secciones alternas */
+  --color-surface: #15201e;    /* tarjetas */
+  --color-white: #1a2523;      /* superficies elevadas */
+
+  --color-ink: #eef1ec;        /* texto principal claro */
+  --color-muted: #99a29d;      /* texto secundario */
+
+  --color-green: #6f978d;      /* acento verde apagado (sage), poco saturado */
+  --color-green-700: #7ea79c;  /* hover ligeramente más claro */
+  --color-green-900: #0f2726;
+  --color-brown: #b39d8c;      /* acento cálido apagado */
+  --color-taupe: #55605a;
+  --color-line: #263230;       /* hairlines sobre oscuro */
+
+  /* deep/on-deep se mantienen fijos (no se sobrescriben aquí),
+     así el footer y la franja quedan verde profundo en ambos modos */
+
+  color-scheme: dark;
+}
+
+:root { color-scheme: light; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Nunca permitir scroll horizontal en móvil */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv01';
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--color-green);
+  color: var(--color-paper);
+}
+
+/* Scrollbar sutil */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--color-paper); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-taupe);
+  border-radius: 999px;
+  border: 3px solid var(--color-paper);
+}
+::-webkit-scrollbar-thumb:hover { background: #b9b2a8; }
+
+/* Logo adaptable al tema */
+.logo-mark {
+  filter: brightness(0) saturate(100%) invert(16%) sepia(40%) saturate(900%) hue-rotate(120deg);
+}
+:root[data-theme='dark'] .logo-mark {
+  filter: brightness(0) invert(0.92);
+}
+
+/* Transición suave al alternar tema (no afecta transforms/hover) */
+@media (prefers-reduced-motion: no-preference) {
+  body *,
+  body *::before,
+  body *::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-duration: 0.45s;
+    transition-timing-function: ease;
+  }
+}
+
+/* ----------------------------- */
+/*  Animaciones de aparición     */
+/* ----------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes dash {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+@keyframes flow {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-floaty { animation: floaty 6s ease-in-out infinite; }
+.animate-pulse-dot { animation: pulse-dot 2.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .animate-floaty, .animate-pulse-dot { animation: none; }
 }
